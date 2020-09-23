@@ -1,4 +1,4 @@
-package main
+package connection
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ CREATE TABLE posts (
 );
 `
 
-func connect() {
+func Connect() {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=go_blog_example password=123123 sslmode=disable")
 	if err != nil {
 		log.Fatalln(err)
@@ -29,11 +29,11 @@ func connect() {
 	//db.MustExec(schema)
 }
 
-func closeConnection() {
+func CloseConnection() {
 	dbConnection.Close()
 }
 
-func getPosts() (posts []models.Post, err error) {
+func GetPosts() (posts []models.Post, err error) {
 	err = dbConnection.Select(&posts, "SELECT * FROM Posts")
 	if err != nil {
 		fmt.Println(err)
@@ -42,7 +42,7 @@ func getPosts() (posts []models.Post, err error) {
 	return
 }
 
-func showPost(id string) (post models.Post, err error) {
+func ShowPost(id string) (post models.Post, err error) {
 	err = dbConnection.Get(&post, "SELECT * FROM Posts WHERE id = $1", id)
 	if err != nil {
 		fmt.Println(err)
@@ -51,7 +51,7 @@ func showPost(id string) (post models.Post, err error) {
 	return
 }
 
-func updatePost(post models.Post) (err error) {
+func UpdatePost(post models.Post) (err error) {
 	_, err = dbConnection.Exec(
 		"UPDATE Posts SET title = $1, content_html = $2, content_markdown = $3 WHERE id = $4",
 		post.Title,
@@ -62,7 +62,7 @@ func updatePost(post models.Post) (err error) {
 	return
 }
 
-func createPost(post models.Post) (err error) {
+func CreatePost(post models.Post) (err error) {
 	_, err = dbConnection.Exec(
 		"INSERT INTO Posts (id, title, content_html, content_markdown) VALUES ($1, $2, $3, $4)",
 		post.Id,
@@ -73,7 +73,7 @@ func createPost(post models.Post) (err error) {
 	return
 }
 
-func deletePost(post models.Post) (err error) {
+func DeletePost(post models.Post) (err error) {
 	_, err = dbConnection.Exec(
 		"DELETE FROM Posts WHERE id = $1",
 		post.Id,

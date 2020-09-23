@@ -4,13 +4,18 @@ import (
 	"fmt"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
+	"goBlogExample/connection"
+	"goBlogExample/session"
 	"html/template"
 )
 
+var inMemorySession *session.Session
 
 func main() {
-	connect()
-	defer closeConnection()
+	connection.Connect()
+	defer connection.CloseConnection()
+
+	inMemorySession = session.NewSession()
 
 	runServer()
 }
@@ -31,15 +36,7 @@ func runServer() {
 		IndentJSON: true,
 	}))
 
-	staticOptions := martini.StaticOptions{Prefix: "assets"}
-
-	m.Use(martini.Static("assets", staticOptions))
-	m.Get("/", indexHandler)
-	m.Get("/posts/new", writeHandler)
-	m.Get("/posts/:id", editHandler)
-	m.Post("/posts/save", savePostHandler)
-	m.Get("/posts/:id/delete", deleteHandler)
-	m.Post("/getHtml", getHtmlHandler)
+	routes(m)
 
 	m.Run()
 }
