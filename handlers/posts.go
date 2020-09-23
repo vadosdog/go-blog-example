@@ -6,26 +6,62 @@ import (
 	"github.com/martini-contrib/render"
 	"goBlogExample/connection"
 	"goBlogExample/models"
+	"goBlogExample/session"
 	"goBlogExample/utils"
 	"html/template"
 	"net/http"
 )
 
-func WriteHandler(rnd render.Render) {
-	rnd.HTML(200, "write", nil)
+func WriteHandler(rnd render.Render, s *session.Session) {
+	if !s.IsAuthorized {
+		rnd.Redirect("/login")
+		return
+	}
+
+	post := models.Post{}
+	model := models.ViewPostModel{}
+	model.IsAuthorized = s.IsAuthorized
+	model.Post = post
+	rnd.HTML(200, "write", model)
 }
 
-func EditHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, params martini.Params) {
+func EditHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, params martini.Params, s *session.Session) {
+	if !s.IsAuthorized {
+		rnd.Redirect("/login")
+		return
+	}
+
 	id := params["id"]
 	post, err := connection.ShowPost(id)
 	if err != nil {
 		http.NotFound(w, r)
 	}
+	model := models.ViewPostModel{}
+	model.IsAuthorized = s.IsAuthorized
+	model.Post = post
 
-	rnd.HTML(200, "write", post)
+	rnd.HTML(200, "write", model)
 }
 
-func SavePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) {
+func ViewHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, params martini.Params, s *session.Session) {
+	id := params["id"]
+	post, err := connection.ShowPost(id)
+	if err != nil {
+		http.NotFound(w, r)
+	}
+	model := models.ViewPostModel{}
+	model.IsAuthorized = s.IsAuthorized
+	model.Post = post
+
+	rnd.HTML(200, "view", model)
+}
+
+func SavePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, s session.Session) {
+	if !s.IsAuthorized {
+		rnd.Redirect("/login")
+		return
+	}
+
 	var id string
 	var post models.Post
 	var err error
@@ -60,7 +96,12 @@ func SavePostHandler(rnd render.Render, w http.ResponseWriter, r *http.Request) 
 	rnd.Redirect("/")
 }
 
-func DeleteHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, params martini.Params) {
+func DeleteHandler(rnd render.Render, w http.ResponseWriter, r *http.Request, params martini.Params, s session.Session) {
+	if !s.IsAuthorized {
+		rnd.Redirect("/login")
+		return
+	}
+
 	id := params["id"]
 
 	post, err := connection.ShowPost(id)

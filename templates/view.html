@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="col-xs-2">
+        {{ if .IsAuthorized }}
+        <a href="/posts/{{.Post.Id}}/edit">edit</a>
+        {{ end }}
+    </div>
+    <div class="col-xs-8">
+        <h1>{{ .Post.Title }}</h1>
+    </div>
+    <div class="col-xs-2">
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-2">
+    </div>
+    <div class="col-xs-8">
+        {{ .Post.ContentHtml | unescape }}
+    </div>
+    <div class="col-xs-2">
+    </div>
+</div>

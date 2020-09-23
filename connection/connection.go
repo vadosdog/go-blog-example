@@ -10,14 +10,14 @@ import (
 
 var dbConnection *sqlx.DB
 
-var schema = `
-CREATE TABLE posts (
-    id varchar(16),
-    title varchar(255),
-    content_html text,
-    content_markdown text
-);
-`
+//var schema = `
+//CREATE TABLE posts (
+//    id varchar(16),
+//    title varchar(255),
+//    content_html text,
+//    content_markdown text
+//);
+//`
 
 func Connect() {
 	db, err := sqlx.Connect("postgres", "user=postgres dbname=go_blog_example password=123123 sslmode=disable")
@@ -30,7 +30,7 @@ func Connect() {
 }
 
 func CloseConnection() {
-	dbConnection.Close()
+	_ = dbConnection.Close()
 }
 
 func GetPosts() (posts []models.Post, err error) {
