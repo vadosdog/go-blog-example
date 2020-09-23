@@ -5,17 +5,17 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"goBlogExample/connection"
+	"goBlogExample/handlers"
 	"goBlogExample/session"
 	"html/template"
 )
 
-var inMemorySession *session.Session
 
 func main() {
 	connection.Connect()
 	defer connection.CloseConnection()
 
-	inMemorySession = session.NewSession()
+	session.StartSession()
 
 	runServer()
 }
@@ -25,7 +25,9 @@ func runServer() {
 
 	m := martini.Classic()
 
-	unescapeFuncMap := template.FuncMap{"unescape": unescape}
+	unescapeFuncMap := template.FuncMap{"unescape": handlers.Unescape}
+
+	m.Use(session.Middleware)
 
 	m.Use(render.Renderer(render.Options{
 		Directory:  "templates",

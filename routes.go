@@ -1,17 +1,20 @@
 package main
 
-import "github.com/go-martini/martini"
+import (
+	"github.com/go-martini/martini"
+	"goBlogExample/handlers"
+)
 
 func routes(m *martini.ClassicMartini) {
 	staticOptions := martini.StaticOptions{Prefix: "assets"}
 
 	m.Use(martini.Static("assets", staticOptions))
-	m.Get("/", indexHandler)
-	m.Get("/posts/new", writeHandler)
-	m.Get("/posts/:id", editHandler)
-	m.Post("/posts/save", savePostHandler)
-	m.Get("/posts/:id/delete", deleteHandler)
-	m.Post("/getHtml", getHtmlHandler)
-	m.Get("/login", getLoginHandler)
-	m.Post("/login", postLoginHandler)
+	m.Get("/", handlers.IndexHandler)
+	m.Get("/posts/new", handlers.WriteHandler)
+	m.Get("/posts/:id", handlers.EditHandler)
+	m.Post("/posts/save", handlers.SavePostHandler)
+	m.Get("/posts/:id/delete", handlers.DeleteHandler)
+	m.Post("/getHtml", handlers.GetHtmlHandler)
+	m.Get("/login", handlers.GetLoginHandler)
+	m.Post("/login", handlers.PostLoginHandler)
 }
